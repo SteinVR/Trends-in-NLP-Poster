@@ -57,4 +57,4 @@ Retrieval-Augmented Generation (RAG) объединяет поиск внешн�
 
 [3] Gao T., Yen H., Yu J., Chen D. *Enabling Large Language Models to Generate Text with Citations*. EMNLP, 2023, pp. 6465–6488. [doi:10.18653/v1/2023.emnlp-main.398](https://doi.org/10.18653/v1/2023.emnlp-main.398).
 
-**Материалы исследования:** [репозиторий проекта](https://github.com/SteinVR/Trends-in-NLP-Poster), [экспериментальная реализация и протокол](../../research/legal-rag/experiments/README.md), [метрики и оценки по вопросам](results/experiment-status.md).
+**Материалы исследования:** [репозиторий проекта](https://github.com/SteinVR/Trends-in-NLP-Poster), [зафиксированный протокол эксперимента](../../research/legal-rag/experiments/protocol.json), [метрики и оценки по вопросам](results/experiment-status.md).
