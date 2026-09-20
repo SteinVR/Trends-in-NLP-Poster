@@ -1,0 +1,92 @@
+[
+  {
+    "corpus": "mixed",
+    "variant": "R0",
+    "n": 95,
+    "context_page_precision": 0.07602756892230576,
+    "context_page_recall": 0.3850877192982456,
+    "affected_n": 52,
+    "affected_context_page_precision": 0.023122710622710624,
+    "affected_context_page_recall": 0.04006410256410256
+  },
+  {
+    "corpus": "mixed",
+    "variant": "R1",
+    "n": 95,
+    "context_page_precision": 0.11218045112781955,
+    "context_page_recall": 0.6162280701754386,
+    "affected_n": 52,
+    "affected_context_page_precision": 0.0953525641025641,
+    "affected_context_page_recall": 0.484775641025641
+  },
+  {
+    "corpus": "mixed",
+    "variant": "R2",
+    "n": 95,
+    "context_page_precision": 0.14731829573934838,
+    "context_page_recall": 0.5289473684210526,
+    "affected_n": 52,
+    "affected_context_page_precision": 0.10668498168498168,
+    "affected_context_page_recall": 0.38461538461538464
+  },
+  {
+    "corpus": "mixed",
+    "variant": "R3",
+    "n": 95,
+    "context_page_precision": 0.2218546365914787,
+    "context_page_recall": 0.7267543859649123,
+    "affected_n": 52,
+    "affected_context_page_precision": 0.21112637362637363,
+    "affected_context_page_recall": 0.6690705128205128
+  },
+  {
+    "corpus": "mixed",
+    "variant": "R4",
+    "n": 95,
+    "context_page_precision": 0.2707894736842105,
+    "context_page_recall": 0.7894736842105263,
+    "affected_n": 52,
+    "affected_context_page_precision": 0.2985576923076923,
+    "affected_context_page_recall": 0.7692307692307693
+  },
+  {
+    "corpus": "mixed",
+    "variant": "R5",
+    "n": 95,
+    "context_page_precision": 0.2707894736842105,
+    "context_page_recall": 0.7894736842105263,
+    "affected_n": 52,
+    "affected_context_page_precision": 0.2985576923076923,
+    "affected_context_page_recall": 0.7692307692307693
+  },
+  {
+    "corpus": "mixed",
+    "variant": "R6",
+    "n": 95,
+    "context_page_precision": 0.2707894736842105,
+    "context_page_recall": 0.7894736842105263,
+    "affected_n": 52,
+    "affected_context_page_precision": 0.2985576923076923,
+    "affected_context_page_recall": 0.7692307692307693
+  },
+  {
+    "corpus": "original",
+    "variant": "R0",
+    "n": 95,
+    "context_page_precision": 0.11165413533834587,
+    "context_page_recall": 0.6214912280701754,
+    "affected_n": 52,
+    "affected_context_page_precision": 0.0945054945054945,
+    "affected_context_page_recall": 0.49439102564102566
+  },
+  {
+    "corpus": "original",
+    "variant": "R1",
+    "n": 95,
+    "context_page_precision": 0.11165413533834587,
+    "context_page_recall": 0.6214912280701754,
+    "affected_n": 52,
+    "affected_context_page_precision": 0.0945054945054945,
+    "affected_context_page_recall": 0.49439102564102566
+  }
+]

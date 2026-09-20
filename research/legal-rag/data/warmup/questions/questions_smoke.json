@@ -1,0 +1,92 @@
+[
+  {
+    "id": "30ab0e56ee0c43b5bf94fd9657c7f7ac24f0e7be29ced2933437f7a234713cd7",
+    "question": "Under Article 8(1) of the Operating Law 2018, is a person permitted to operate or conduct business in or from the DIFC without being incorporated, registered, or continued under a Prescribed Law or other Legislation administered by the Registrar?",
+    "answer_type": "boolean"
+  },
+  {
+    "id": "331b267822eaa013b4a79d92f2ac5118052a57150df9a29d7d11c531f02d23cf",
+    "question": "What is the Date of Issue of the document in case CFI 057/2025?",
+    "answer_type": "date"
+  },
+  {
+    "id": "5d271fced60d88e008a69adc2da21de427906206bfb49f5554a3bf1dd6f72772",
+    "question": "According to the title page of the Common Reporting Standard Law, what is its official DIFC Law number?",
+    "answer_type": "number"
+  },
+  {
+    "id": "358bf0caaa87ba7e11698c5e0bb230f5742c141f2da8a3e8969cee41ef0f7841",
+    "question": "Do cases SCT 295/2025 and SCT 514/2025 involve any of the same legal entities or individuals as main parties?",
+    "answer_type": "boolean"
+  },
+  {
+    "id": "bce4c288236518dfd08f6bac5a75c75ea79b1250347c4b998252fa9d7265a7c3",
+    "question": "What kind of liability do Partners have under Article 28(1) of the General Partnership Law 2004?",
+    "answer_type": "free_text"
+  },
+  {
+    "id": "39890efe7db1258f568e838c284020a9fc79b8bf0deddab76fdf853c9b0171ed",
+    "question": "Is there any main party common to both case CFI 057/2025 and case SCT 295/2025?",
+    "answer_type": "boolean"
+  },
+  {
+    "id": "acd0ddc6715f2bccf5076dc47e6874a8ecb782dd10c0b162071f890ad96bef47",
+    "question": "Between SCT 295/2025 and SCT 514/2025, which document has the earlier issue date?",
+    "answer_type": "name"
+  },
+  {
+    "id": "1a80e5dc69fb76a97c0ada049df2425c9f06de373bbb9ee5b39dbd1f12f85387",
+    "question": "From the title pages of all documents in case CA 005/2025 and case CFI 067/2025, identify whether any individual or company is named as a main party in both cases.",
+    "answer_type": "boolean"
+  },
+  {
+    "id": "e59a0dc49c291402ead91342b065bc4e9ded0043d126f73dd00ba6045aae46b7",
+    "question": "Under Article 14(1) of the Employment Law 2019, how many days does an Employer have to provide an Employee with a written Employment Contract after the commencement of employment?",
+    "answer_type": "number"
+  },
+  {
+    "id": "b667804a5541a24d40f211b3febc69fa5e633d52a08baf9ce6735832ea4e5ec1",
+    "question": "Based on the full case files for DEC 001/2025 and CFI 057/2025, was there any judge involved in both cases?",
+    "answer_type": "boolean"
+  },
+  {
+    "id": "f33177fc2ed5b35033bfa1c7f9fc5d7a3776feb10b498c375cdcb40e0c53ffbf",
+    "question": "Is there any main party that appeared in both cases CA 004/2025 and SCT 514/2025?",
+    "answer_type": "boolean"
+  },
+  {
+    "id": "3c33f9a4de9bac177c65e3c3bd986ef05e527095e4c96aabbbed76599b727eb0",
+    "question": "Who are listed as the claimants in the case documents for SCT 295/2025?",
+    "answer_type": "names"
+  },
+  {
+    "id": "87a1294f4e8414adaf49579d914252f4c7a9e90c54a452b5a420bed4934ce335",
+    "question": "If a Reporting Financial Institution obtains or creates records in a language other than English under the Common Reporting Standard Law 2018, what must it provide upon request to the Relevant Authority?",
+    "answer_type": "free_text"
+  },
+  {
+    "id": "f564b1fd7332944fa826e3af69330b53e8fed018c370dde5b57a8e338d4ecd62",
+    "question": "Between CFI 016/2025 and CFI 057/2025, which document has the earlier issue date?",
+    "answer_type": "name"
+  },
+  {
+    "id": "d9d27c9cace6eafd11dbb349244e0443e16c8cc0efdf516514cc945135e1a597",
+    "question": "Between ARB 034/2025 and SCT 295/2025, which was issued first?",
+    "answer_type": "name"
+  },
+  {
+    "id": "ec0aa6992207b818c06e57dd28b08dad22ba2de3bd9e81a9a222e2fba9814406",
+    "question": "Who are listed as the claimants in the case documents for SCT 454/2024?",
+    "answer_type": "names"
+  },
+  {
+    "id": "84941458c4ade946dae84cf5ebc4abf362a6f6e6fec835ba5c43ad2d3b4b14d7",
+    "question": "Is there any information about parole hearings in case CFI 057/2025?",
+    "answer_type": "free_text"
+  },
+  {
+    "id": "ff1b357588e9b5881ec9b1558ede2892e7cbf42a6787a1cbb922b45318f66778",
+    "question": "According to the title page of the DIFC Law on the Application of Civil and Commercial Laws, what is its official law number?",
+    "answer_type": "number"
+  }
+]

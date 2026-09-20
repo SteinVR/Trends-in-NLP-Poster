@@ -1,0 +1,23 @@
+{
+  "trace_id": "c408660ee76c48b48f5b3dbb4074d038",
+  "question_id": "f2a28b01dbdda99ec2b09a7001ea72e35b94a42c14c4bc5e5206c59857770306",
+  "answer_type": "boolean",
+  "model_name": "gpt-5.4-mini",
+  "candidate_count": 30,
+  "reranked_count": 10,
+  "evidence_chunk_count": 4,
+  "retrieved_chunk_pages": [
+    {
+      "doc_id": "1b446e196b4d1752241c8ff689a31ea705e98ad0c16b9d343c303664f72b64a1",
+      "page_numbers": [
+        1
+      ]
+    },
+    {
+      "doc_id": "5d3df6d69fac3ef91e13ac835b43a35e9e434fbc7e72ea5c01e288d69b66e6a2",
+      "page_numbers": [
+        1
+      ]
+    }
+  ]
+}

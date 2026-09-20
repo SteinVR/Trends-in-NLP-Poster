@@ -1,0 +1,50 @@
+{
+  "status": "passed",
+  "conditions": 9,
+  "answers": 900,
+  "structured_scores": 630,
+  "free_text_scores": 270,
+  "citation_scores": 855,
+  "checks": [
+    "complete question coverage",
+    "Q equals direct mean for 70/30 question mix",
+    "citation metrics independently recomputed from sets",
+    "citations contained in supplied context",
+    "original R0/R1 answers identical",
+    "R5/R6 answers and quality scores identical"
+  ],
+  "api": {
+    "model_cache": {
+      "unique_cached_requests": 549,
+      "recorded_responses": 554,
+      "model_snapshots": {
+        "gpt-5.4-mini-2026-03-17": 554
+      },
+      "statuses": {
+        "completed": 549,
+        "incomplete": 5
+      },
+      "input_tokens": 1298484,
+      "output_tokens": 653104
+    },
+    "review_cache": {
+      "unique_cached_requests": 160,
+      "recorded_responses": 161,
+      "model_snapshots": {
+        "gpt-5.4-mini-2026-03-17": 161
+      },
+      "statuses": {
+        "completed": 160,
+        "incomplete": 1
+      },
+      "input_tokens": 332708,
+      "output_tokens": 119034
+    }
+  },
+  "artifact_sha256": {
+    "retrieval_diagnostics.csv": "9f20b7e26ce80b8d69acb578211354b29c61809fa4b4b10a0c557a41ebbc6b1b",
+    "metrics.csv": "75bfc6fc8ac2063ef98fd581274df5490764879a66a80272015a06afef675027",
+    "per-question-scores.csv": "1652da3354d0030b9d361ce966319a00396a08d26fe19465c3defe7214df825f",
+    "comparisons.csv": "532d0affb25bc78fd2f57709df5a4a08b8bc5784e5983f2c0b6a36b0bc079536"
+  }
+}

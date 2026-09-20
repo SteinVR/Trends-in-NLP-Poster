@@ -1,0 +1,30 @@
+{
+  "width": 2245.03125,
+  "height": 3178.578125,
+  "contentBottom": 3125.625,
+  "overflowing": false,
+  "missingImages": [],
+  "sectionPositions": [
+    {
+      "tag": "SECTION",
+      "top": 324.28125,
+      "bottom": 630.921875
+    },
+    {
+      "tag": "SECTION",
+      "top": 646.03125,
+      "bottom": 1395.03125
+    },
+    {
+      "tag": "SECTION",
+      "top": 1410.140625,
+      "bottom": 2940.890625
+    },
+    {
+      "tag": "FOOTER",
+      "top": 2948.4375,
+      "bottom": 3125.625
+    }
+  ],
+  "bodyFont": "32px"
+}

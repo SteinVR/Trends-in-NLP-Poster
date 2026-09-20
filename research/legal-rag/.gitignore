@@ -1,0 +1,52 @@
+# IDE / tools
+.codex/
+.opencode/
+.claude/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv
+.venv/
+.venv-ocr/
+
+# Data artifacts (large)
+data/warmup/corpus/
+data/warmup/index/
+data/warmup/manifests/
+data/warmup/documents/documents.zip
+data/final/
+data/warmup-ocr/
+*.parquet
+*.faiss
+data/full
+
+# Qdrant local storage
+qdrant_data/
+
+# Submission artifacts
+*.zip
+submission*.json
+
+# Curated public demo artifacts
+!artifacts/warmup_runs/configs/solver_narrowing_true.yaml
+!artifacts/warmup_runs/summary_runs.tsv
+!artifacts/warmup_runs/top_failures.tsv
+!artifacts/warmup_runs/runs/submission_e2e_20260424_solver_narrowing_no_guard/**
+
+# Agent/runtime logs
+logs/agents/
+logs/project/runtime/**/*.jsonl
+run.log
+
+.apm/
+.DS_Store
+
+# Local research runtime and derived corpus (rebuild with experiments/)
+experiment_data/
+experiment_runs/
+models/

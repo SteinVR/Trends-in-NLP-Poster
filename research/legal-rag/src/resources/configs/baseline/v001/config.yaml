@@ -1,0 +1,152 @@
+# Baseline W1A config. Runtime env overrides:
+# - COMPETITION_API_KEY
+# - COMPETITION_PHASE
+# - COMPETITION_BASE_URL
+# - COMPETITION_DATA_ROOT
+# - COMPETITION_TIMEOUT_SECONDS
+# - COMPETITION_EXTRACT_DOCUMENTS
+# - COMPETITION_OVERWRITE_DOWNLOADS
+# - COMPETITION_UNANSWERABLE_RETRIEVAL_POLICY
+# - COMPETITION_ENABLE_OCR
+# - COMPETITION_OCR_UNAVAILABLE_POLICY
+# - COMPETITION_OCR_RENDER_DPI
+# - COMPETITION_OCR_TEXT_DETECTION_LIMIT_SIDE_LEN
+# - COMPETITION_OCR_TEXT_RECOGNITION_BATCH_SIZE
+# - COMPETITION_PASS_A_ENABLED
+# - COMPETITION_PAGE_VALIDATION_MODE
+# - COMPETITION_LOG_LEVEL
+# - COMPETITION_LOG_DIRECTORY
+# - COMPETITION_DEBUG_DOCUMENTS
+# - COMPETITION_DEBUG_QUESTIONS
+version: v001
+phase: warmup
+
+api:
+  base_url: https://platform.agentic-challenge.ai/api/v1
+  api_key_env: COMPETITION_API_KEY
+  timeout_seconds: 120.0
+  user_agent: agentic-rag-challenge/0.1.0
+
+storage:
+  root_dir: data
+  questions_dirname: questions
+  questions_filename: questions.json
+  documents_dirname: documents
+  documents_archive_name: documents.zip
+  extracted_documents_dirname: pdfs
+  manifests_dirname: manifests
+  manifest_filename: sync_manifest.json
+  corpus_dirname: corpus
+  corpus_filename: corpus.jsonl
+  page_map_filename: page_map.json
+  corpus_manifest_filename: corpus_manifest.json
+  debug_dirname: debug
+
+download:
+  extract_documents: true
+  overwrite: false
+  chunk_size_bytes: 1048576
+
+evaluation:
+  unanswerable_retrieval_policy: allow_empty
+
+ingestion:
+  enable_ocr: true
+  ocr_unavailable_policy: error
+  ocr_render_dpi: 300
+  ocr_text_detection_limit_side_len: 1536
+  ocr_text_recognition_batch_size: 1
+  extractable_text_min_chars: 50
+  suspicious_text_max_chars: 200
+  large_image_area_ratio: 0.25
+  scan_image_area_ratio: 0.70
+  text_completeness_target_chars: 1500
+  encoding_bad_char_threshold: 0.05
+  enable_semantic_table_blocks: true
+  opendataloader_table_method: cluster
+  opendataloader_reading_order: xycut
+  opendataloader_hybrid_backend: docling-fast
+  opendataloader_hybrid_mode: full
+  opendataloader_hybrid_url: http://localhost:5002
+  opendataloader_hybrid_timeout_ms: 120000
+  fail_fast_on_document_error: true
+
+page_attribution:
+  pass_a_enabled: true
+  suppress_title_pages: false
+  suppress_repeated_boilerplate: true
+  validation_mode: degrade_first
+  emit_empty_pages_for_no_answer: false
+  allow_solver_page_narrowing: false
+
+answering:
+  reasoning_effort_by_type:
+    boolean: high
+    number: high
+    name: high
+    names: high
+    date: high
+    free_text: high
+  confidence_threshold_by_type:
+    boolean: 0.7
+    number: 0.55
+    name: 0.75
+    names: 0.75
+    date: 0.6
+    free_text: 0.5
+
+indexing:
+  token_chunk_size: 300
+  token_chunk_overlap: 50
+  enabled_chunk_families:
+    - page
+    - section
+    - clause
+    - microchunk
+    - table
+
+retrieval:
+  candidate_budget: 10
+  rerank_budget: 5
+  default_evidence_budget: 3
+  evidence_budget_by_answer_type:
+    boolean: 3
+    number: 2
+    name: 3
+    names: 3
+    date: 2
+    free_text: 3
+  question_class_budgets:
+    cross_case:
+      candidate_budget: 24
+      rerank_budget: 8
+      evidence_budget: 4
+    case:
+      candidate_budget: 12
+      rerank_budget: 6
+      evidence_budget: 4
+    statute:
+      candidate_budget: 8
+      rerank_budget: 4
+      evidence_budget: 2
+  min_rerank_score: 0.0
+  parent_page_expansion_enabled: false
+  parent_page_expansion_limit: 3
+  query_expansion_enabled: true
+  query_expansion_max_queries: 2
+  query_expansion_case_only: true
+
+decomposition:
+  enabled: false
+  max_subquestions: 4
+
+runtime:
+  require_gpu: true
+
+logging:
+  directory: logs/project/runtime
+  level: INFO
+  console: true
+  jsonl: true
+  debug_documents: false
+  debug_questions: false
