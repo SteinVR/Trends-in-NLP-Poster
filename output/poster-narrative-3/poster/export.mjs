@@ -6,6 +6,7 @@ import fs from 'node:fs/promises';
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const dir = path.dirname(fileURLToPath(import.meta.url));
+const diagnostics = path.resolve(dir,'../../../tmp/poster-narrative-3');
 const browser = await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH || '/usr/bin/chromium',args:['--no-sandbox']});
 try {
  const page = await browser.newPage({viewport:{width:2246,height:3179},deviceScaleFactor:1});
@@ -25,5 +26,18 @@ try {
  if(check.overflowing||check.missingImages.length)throw new Error('Layout overflow or missing images');
  await page.pdf({path:path.join(dir,'poster.pdf'),preferCSSPageSize:true,printBackground:true,displayHeaderFooter:false});
  await page.locator('.poster').screenshot({path:path.join(dir,'poster.png')});
- await fs.writeFile(path.join(dir,'layout-check.json'),JSON.stringify(check,null,2)+'\n');
+ await fs.mkdir(diagnostics,{recursive:true});
+ await fs.writeFile(path.join(diagnostics,'layout-check.json'),JSON.stringify(check,null,2)+'\n');
+
+ for (const name of ['pipeline-metrics','ocr-control']) {
+  const stem=path.resolve(dir,'../results',name);
+  const svg=await fs.readFile(stem+'.svg','utf8');
+  const width=Number(svg.match(/width="(\d+)"/)[1]);
+  const height=Number(svg.match(/height="(\d+)"/)[1]);
+  await page.setViewportSize({width,height});
+  await page.goto('file://'+stem+'.svg');
+  await page.evaluate(()=>document.fonts.ready);
+  await page.screenshot({path:stem+'.png'});
+  await page.pdf({path:stem+'.pdf',width:width+'px',height:height+'px',printBackground:true,margin:{top:0,bottom:0,left:0,right:0}});
+ }
 }finally{await browser.close()}
