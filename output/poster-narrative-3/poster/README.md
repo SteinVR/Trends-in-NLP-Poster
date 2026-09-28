@@ -1,16 +1,17 @@
-# Актуальный постер
+# Legal RAG poster
 
-Утверждённый макет: [index.html](index.html). Готовые экспорты: [poster.pdf](poster.pdf) и [poster.png](poster.png). Один лист DIN A1 (594 × 841 мм), без имён авторов. PDF сохраняет векторную графику; PNG предназначен для просмотра.
+- `poster.pdf` — current poster, one landscape DIN A1 page (841 × 594 mm), for printing.
+- `index.html` — editable HTML source.
+- `poster.png` — preview for viewing.
+- `assets/` — fonts, licenses and university logo.
+- `../powerpoint/` — editable PowerPoint and its own preview.
 
-Графики читаются из `../results/`, шрифты и логотип — из `assets/`. Редактируемая PowerPoint-версия и её собственный PNG находятся в `../powerpoint/`.
+The charts are embedded as vectors in the HTML. Experiment data remain in `../results/metrics.csv`. The standalone figures in `../results/` can be regenerated with `node build-figures.mjs`; this does not update the embedded HTML charts.
 
-Для пересборки из корня репозитория нужны Node.js, Playwright и Chromium:
+To export the HTML with Node.js, Playwright and Chromium, run from this directory:
 
 ```sh
-node output/poster-narrative-3/poster/build-figures.mjs
-NODE_PATH=<directory-containing-playwright> node output/poster-narrative-3/poster/export.mjs
+NODE_PATH=<directory-containing-playwright> node export.mjs
 ```
 
-`CHROMIUM_PATH` позволяет указать браузер вместо `/usr/bin/chromium`. Экспорт обновляет PDF/PNG постера и обоих графиков; диагностика сохраняется в `tmp/poster-narrative-3/`. PowerPoint автоматически не пересобирается.
-
-Для просмотра через HTTP запускайте сервер из `output/poster-narrative-3/` и открывайте `/poster/index.html`, чтобы были доступны соседние графики.
+Set `CHROMIUM_PATH` to override `/usr/bin/chromium`. The export checks layout and writes diagnostics to `tmp/poster-narrative-3/` at repository root. PowerPoint is maintained separately.

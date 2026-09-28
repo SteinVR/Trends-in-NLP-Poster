@@ -1,147 +1,230 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Building Legal RAG · Universität Trier</title>
-<style>
-@font-face{font-family:Noto;src:url('assets/NotoSans-Regular.ttf');font-weight:400}
-@font-face{font-family:Noto;src:url('assets/NotoSans-Bold.ttf');font-weight:700}
-:root{--blue:#0069aa;--brand:#007ac3;--ink:#173248;--muted:#516578;--line:#cfdee8;--pale:#eff6fa}
-*{box-sizing:border-box}html,body{margin:0;padding:0}body{font-family:Noto,sans-serif;color:var(--ink);background:#dce7ed;font-size:24pt;line-height:1.18}
-.poster{width:594mm;min-height:841mm;margin:12mm auto;background:white;padding:10mm 18mm 12mm;box-shadow:0 3mm 18mm #17324820}
-p,h1,h2,h3,figure{margin:0}strong{font-weight:700}a{color:inherit;text-decoration:none}
-header{position:relative;min-height:35mm;display:flex;align-items:center;justify-content:space-between;gap:8mm}.logo{width:74mm;height:auto;flex:none}
-h1{font-size:47pt;line-height:1.04;letter-spacing:-.035em;font-weight:700;margin:0;color:#073d65}
-section{margin-top:3mm}.section-title{display:flex;gap:4mm;align-items:center;padding-top:3mm;margin-bottom:3mm;border-top:1mm solid var(--blue)}.num{font-size:26pt;font-weight:700;color:var(--blue)}h2{font-size:31pt;letter-spacing:.03em;text-transform:uppercase}.english{font-size:24pt;color:var(--muted);font-weight:400;margin-left:auto}
-h3{font-size:26pt;line-height:1.16;color:#07568a;margin-bottom:2mm}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8mm}.three{grid-template-columns:repeat(3,1fr);gap:8mm}
-.context{margin-bottom:3mm}.question{font-size:28pt;line-height:1.18;font-weight:700;color:#073d65;margin:3mm 0 4mm}
-.hypotheses{background:var(--pale);padding:4mm 5mm}.hypotheses h3{font-size:25pt}.hypotheses p{line-height:1.18}
-.data{margin-bottom:3mm}.icon-defs{position:absolute;width:0;height:0;overflow:hidden}.icon{width:17mm;height:17mm;flex:none;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
-.baseline-flow{display:grid;grid-template-columns:.68fr 1.04fr 1.42fr 1.22fr 1.45fr;gap:7mm;align-items:center;background:#f0f5f8;border:.45mm solid #c8d8e5;border-radius:3mm;padding:3mm 4mm;margin:3mm 0 5mm;min-height:33mm}
-.baseline-flow h3{font-size:25pt;margin:0}.baseline-node{display:flex;align-items:center;gap:3mm;position:relative}.baseline-node p{line-height:1.15}.baseline-node strong{display:block;margin-bottom:1mm}.baseline-node:not(:last-child)::after{content:'→';position:absolute;right:-6mm;color:#437caa;font-size:29pt}.baseline-node .icon{width:15mm;height:15mm}
-.pipeline-groups{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3mm 6mm}.phase{grid-column:span 2;position:relative;text-align:center;border-top:.45mm solid var(--stage);border-left:.45mm solid var(--stage);border-right:.45mm solid var(--stage);border-radius:2mm 2mm 0 0;height:7mm;margin-top:3mm;color:var(--stage)}.phase.single{grid-column:span 1}.phase span{position:relative;top:-4.5mm;background:white;padding:0 3mm;font-weight:700;font-size:24pt;text-transform:uppercase;white-space:nowrap}
-.doc-stage{--stage:#3186bd;--tint:#eef7fd;--band:#dcecf7}.retrieval-stage{--stage:#4b8a42;--tint:#f1f8ef;--band:#e1efdc}.answer-stage{--stage:#b96734;--tint:#fff5ed;--band:#fae7d6}.citation-stage{--stage:#7655b5;--tint:#f6f1fc;--band:#e8ddf5}
-.pipeline-card{position:relative;border:.45mm solid var(--stage);border-radius:3mm;background:var(--tint);display:flex;flex-direction:column;min-width:0;line-height:1.14}
-.card-body{padding:3mm 3mm 2mm;display:flex;flex-direction:column;flex:1}.pipeline-card h3{font-size:25pt;line-height:1.12;color:var(--ink);min-height:20mm;margin:0 0 2mm}.pipeline-card .purpose{min-height:29mm}.pipeline-card .icon{color:var(--stage);width:17mm;height:17mm;margin:1mm auto 0}.pipeline-card .technology{background:var(--band);padding:2.5mm 3mm;min-height:34mm;border-radius:0 0 2.6mm 2.6mm;display:flex;align-items:flex-start;font-size:24pt}
-.pipeline-card:not(:last-child)::after{content:'';position:absolute;width:5mm;height:7mm;right:-5.8mm;top:43%;background:var(--stage);clip-path:polygon(0 30%,52% 30%,52% 0,100% 50%,52% 100%,52% 70%,0 70%)}
-.cumulative-note{text-align:center;margin-top:2mm;padding:2mm 3mm;background:#edf1f5;border-radius:2mm;font-weight:700}
-.answer-generation{padding:2mm 0;border-top:.4mm solid var(--line);margin-top:3mm;color:var(--muted)}
-.evaluation{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8mm;margin-top:3mm}
-.evaluation h3{font-size:25pt;margin-bottom:1.5mm}
-.evaluation .metric-question{font-style:italic;margin-bottom:1.5mm}
-.evaluation .formula{font-weight:700}
-.chart{width:100%;display:block;margin:1mm 0 2mm}
-.detail-grid{margin-top:4mm;grid-template-columns:1fr 1fr}.detail-grid>div+div{border-left:.5mm solid var(--line);padding-left:6mm}.ocr{width:100%;display:block;margin:3mm 0 2mm}.hyp-row{margin-bottom:2.5mm}.hyp-row:last-child{margin-bottom:0}.hyp-row strong{color:#07568a}.detail-note{margin-top:2.5mm;color:var(--muted)}
-.limitations{margin-top:3mm;padding-top:2mm;border-top:.5mm solid var(--line);color:var(--muted)}
-.limitations h3{font-size:25pt;margin-bottom:1.5mm}
-.conclusion{margin-top:4mm;background:#07568a;color:white;padding:4mm 5mm}.conclusion h3{color:white;margin-bottom:2mm}
-footer{margin-top:3mm;padding-top:2mm;border-top:.5mm solid var(--line);display:block;font-size:24pt;line-height:1.18}footer h3{font-size:24pt;margin-bottom:1mm}footer p+p{margin-top:1mm}footer .code{overflow-wrap:anywhere}.refs a{text-decoration:underline;text-decoration-color:#afc6d5;text-underline-offset:3px}
-.toolbar{display:flex;gap:16px;position:fixed;bottom:16px;right:20px;background:#173248;color:white;padding:12px 16px;border-radius:5px;font:16px Noto,sans-serif;z-index:4}.toolbar a{text-decoration:underline}.toolbar button{border:0;background:none;color:inherit;font:inherit;padding:0;cursor:pointer;text-decoration:underline}
-@page{size:594mm 841mm;margin:0}@media print{html,body{background:white;width:594mm;height:841mm}.poster{margin:0;box-shadow:none;min-height:0;height:841mm;zoom:1!important}.toolbar{display:none}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-</style>
-</head>
-<body>
-<svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Building Legal RAG — Layout v4</title><style>
+@font-face{font-family:Poster;src:url('assets/BarlowCondensed-Regular.ttf');font-weight:400}
+@font-face{font-family:Poster;src:url('assets/BarlowCondensed-Bold.ttf');font-weight:700}
+*{box-sizing:border-box}html,body{margin:0;padding:0}body{background:#dae5ec;color:#18334a;font-family:Poster,sans-serif;font-size:24pt;line-height:1.1}
+.poster{width:841mm;height:594mm;background:white;padding:9mm 10mm 9mm;margin:20px auto;box-shadow:0 8px 40px #16364a30;display:flex;flex-direction:column}
+p,h1,h2,h3{margin:0}p+p{margin-top:12px}h1{font-size:52pt;line-height:1.03;color:#082b51;letter-spacing:-.4px}header{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #a8cbdc;padding:0 10px 22px;gap:38px;margin-bottom:22px}.logo{width:350px;height:auto}.columns{display:grid;grid-template-columns:27% 42% 1fr;gap:22px;flex:1;min-height:0}.col{display:flex;flex-direction:column;gap:18px;min-width:0}
+section{break-inside:avoid;min-width:0}h2{background:linear-gradient(90deg,#056097,#0071ae);color:#fff;border-radius:6px 6px 0 0;font-size:29pt;line-height:1.08;padding:9px 17px 8px;font-weight:700;letter-spacing:.15px}h2>span{margin-right:7px}.content{background:#f2f8fc;border:1px solid #d9e9f1;border-radius:0 0 9px 9px;padding:17px 19px}h3{font-size:25pt;color:#073c64;line-height:1.08;margin-bottom:6px}.method-label{font-size:24pt;font-weight:400;opacity:.9}.question .content{background:#eaf5fc;text-align:center;font-weight:700;color:#082f56;padding:20px 24px;font-size:26pt;line-height:1.1}
+#s5 .content{padding:0;border:none;background:white}.hyp{padding:13px 17px;margin-top:8px;border-radius:8px}.h1{background:#eaf4fb}.h2{background:#eff7e9}.h3{background:#f2ebfa}.subhead{margin-top:20px}.baseline{margin:19px 0 23px;background:#e6f3fb;border:1px solid #cfdfeb;border-radius:8px;padding:16px}.baseline>h3{margin-bottom:14px}.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:35px}.flow>div{display:flex;align-items:center;gap:12px;position:relative}.flow>div:not(:last-child)::after{content:'→';position:absolute;right:-31px;font-size:38px;color:#427a9c}.flow strong{line-height:1.1}.flow span{font-weight:400}.dense{margin-top:15px;color:#345c73}.icon-defs{position:absolute;width:0;height:0;overflow:hidden}.icon{width:66px;height:66px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.stages{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}.phase{grid-column:span 2;text-align:center;font-weight:700;font-size:23pt;text-transform:uppercase;padding:12px 5px;border-radius:6px}.phase.single{grid-column:span 1}.doc{background:#eaf5fc;--stage:#147ba7}.retr{background:#eef7e9;--stage:#3b782d}.ans{background:#fff1e5;--stage:#ab5826}.cit{background:#f1eafb;--stage:#6845a0}.stage{padding:15px 13px;border-radius:8px;display:flex;flex-direction:column;position:relative;min-height:398px;border:1px solid #d8e4ec}.stage h3{font-size:25pt;min-height:116px;color:var(--stage)}.stage p{line-height:1.09}.stage .icon{color:var(--stage);margin:20px auto}.stage .tech{margin-top:auto;padding-top:14px;border-top:1px solid #c8d8e2}.stage:not(:last-child)::after{content:'→';position:absolute;right:-14px;top:48%;color:var(--stage);font-size:29px;z-index:1}.fixed{margin-top:19px;padding-top:16px;border-top:1px solid #cbdde7}
+.eval-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:18px}.eval-grid>div{padding:16px;border-radius:7px}.metric-question{font-style:italic;margin:10px 0 14px}.main-takeaway{background:#075c91;color:white;border-radius:8px;padding:20px 23px;line-height:1.12}.takeaways{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:20px}.takeaways>div+div{border-left:1px solid #c8dce7;padding-left:20px}.takeaways h3{margin-bottom:10px}.unexpected{margin-top:18px!important;border-top:1px solid #c8dce7;padding-top:14px}.conclusion{margin-top:auto}
+.chart{width:100%;display:block}.ocr-bars{margin:17px 0 19px}.bar-row{margin-bottom:13px}.bar-row>span{display:block;margin-bottom:6px}.track{position:relative;background:#e4edf3;height:25px;width:91%}.bar{height:100%;background:#087ab9}.track strong{position:absolute;top:-4px;font-size:25pt;white-space:nowrap}.scale{width:91%;display:flex;justify-content:space-between;font-size:21pt;color:#476579;margin-top:6px}.hyp-result{display:grid;grid-template-columns:26% 1fr;gap:16px;padding:15px;border-radius:7px;margin-bottom:10px}.hyp-result:last-child{margin-bottom:0}.hyp-result h3{font-size:24pt}.hyp-result p{line-height:1.09}#s10 .content{padding:12px;background:#fff}.right{gap:16px}#s13{margin-top:auto}#s13 .content{background:#f8fbfd}ol{margin:0;padding-left:32px}li{padding-left:4px;margin-bottom:9px;font-size:20pt;line-height:1.06}li:last-child{margin-bottom:0}.code{font-size:22pt;margin-top:15px;padding-top:11px;border-top:1px solid #c8dce7}a{color:#075a8b;text-decoration:none}
+@page{size:841mm 594mm;margin:0}@media print{html,body{width:841mm;height:594mm;background:white}.poster{margin:0;box-shadow:none;zoom:1!important}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+body{line-height:1.05}.poster{padding:8mm}.columns{grid-template-columns:29% 41% 1fr;gap:18px}.col{gap:14px}header{padding-bottom:18px;margin-bottom:18px}h1{font-size:49pt}.logo{width:300px}h2{font-size:28pt;padding:7px 14px}.content{padding:13px 16px}p+p{margin-top:10px}.question .content{font-size:25pt;padding:16px 20px}.hyp{padding:10px 14px;margin-top:6px}.subhead{margin-top:15px}.baseline{margin:15px 0 17px;padding:12px}.baseline>h3{margin-bottom:10px}.flow{gap:30px}.flow .icon{width:55px;height:55px}.flow>div{gap:9px}.dense{margin-top:10px}.phase{font-size:22pt;padding:9px 3px}.stage{padding:12px 10px;min-height:360px}.stage h3{font-size:24pt;min-height:98px}.stage p{line-height:1.05}.stage .icon{margin:14px auto;width:59px;height:59px}.stage .tech{padding-top:10px}.fixed{margin-top:14px;padding-top:12px}.eval-grid{margin-top:14px;gap:10px}.eval-grid>div{padding:12px}.metric-question{margin:8px 0 10px}.main-takeaway{padding:16px 18px;line-height:1.06}.takeaways{gap:16px;margin-top:15px}.takeaways>div+div{padding-left:15px}.takeaways h3{margin-bottom:8px}.unexpected{margin-top:13px!important;padding-top:11px}.hyp-result{padding:12px;gap:13px;margin-bottom:8px}.hyp-result p{line-height:1.05}.right{gap:14px}.code{font-size:24pt}li{font-size:20pt;line-height:1.05;margin-bottom:7px}
+
+/* A1 density pass: retain 24 pt body text and the reference's three-column structure. */
+.columns{grid-template-rows:minmax(0,1fr)}.col{min-height:0}section{flex-shrink:0}
+.baseline{position:relative}.baseline>h3{margin-bottom:14px}.baseline .dense{position:absolute;right:14px;top:12px;margin:0}.flow .icon{width:40px;height:40px}.flow{gap:24px}.flow>div{gap:8px}.flow>div:not(:last-child)::after{right:-25px}.flow strong{font-size:24pt}.stage .icon{width:44px;height:44px;margin:8px auto}.stage{min-height:330px}.stage h3{min-height:90px}.phase{padding:7px 3px}.fixed{margin-top:11px;padding-top:10px}
+#s13 li{font-size:18pt;line-height:1.05;margin-bottom:6px}#s13 .content{padding:12px 14px}.bar-row>span{font-size:22pt;margin-bottom:4px}.bar-row{margin-bottom:10px}.track{height:20px}.ocr-bars{margin:13px 0}.track strong{font-size:23pt;top:-6px}#s9 h3{font-size:24pt}.right .content{padding-top:11px;padding-bottom:11px}
+
+.hyp-result{display:block;padding:10px 13px}.hyp-result h3{font-size:24pt;margin-bottom:6px}.hyp-result p{line-height:1.05}.takeaways{margin-top:11px}.unexpected{margin-top:10px!important;padding-top:8px}.main-takeaway{padding:14px 16px}.eval-grid{margin-top:11px}.eval-grid>div{padding:10px}.conclusion .content{padding-top:11px;padding-bottom:11px}
+
+.hyp-result h3{display:inline;margin-right:10px}.hyp-result p{display:inline}.hyp-result{line-height:1.05;padding:14px}.left{justify-content:space-between}
+
+@font-face{font-family:PosterTitle;src:url('assets/NotoSans-Bold.ttf');font-weight:700}h1{font-family:PosterTitle,sans-serif;font-size:54pt;letter-spacing:-1.3px}
+
+/* Shared stage rows, followed by a continuous results-to-conclusion reading path. */
+.stages{grid-template-rows:auto auto auto 48px auto;gap:10px}
+.stage{display:grid;grid-template-rows:subgrid;grid-row:2 / span 4;min-height:0;padding:12px 10px;row-gap:10px}
+.stage h3{min-height:0;margin:0;line-height:1.08}
+.stage>p:not(.tech){margin:0;line-height:1.05}
+.stage .icon{height:44px;width:44px;justify-self:center;align-self:center;margin:0}
+.stage .tech{margin:0;padding-top:10px;border-top:1px solid #c8d8e2;line-height:1.05}
+.stage:not(:last-child)::after{top:auto;bottom:154px;right:-14px}
+#s6 .content>h3:first-child,#s6 .subhead{display:inline;margin:0 8px 0 0}
+#s6 .content>h3:first-child+p,#s6 .subhead+p{display:inline}
+#s6 .subhead::before{content:'';display:block;height:16px}
+.baseline{margin-top:17px}
+.supporting{margin-top:auto;display:flex;flex-direction:column;gap:14px;padding-top:18px;border-top:2px solid #b8d4e4}
+.supporting #s13{margin-top:0}
+.right #s11{margin-top:auto}
+.right .takeaways{display:block;margin-top:14px}
+.right .takeaways>div{border:0;padding:0;margin:0 0 12px}
+.right .takeaways h3{display:inline;font-size:24pt;margin:0 8px 0 0;line-height:1.05}
+.right .takeaways p{display:inline;line-height:1.05}
+.right .takeaways>div:last-child{margin-bottom:0}
+.right .main-takeaway{padding:16px;line-height:1.05}
+.right .unexpected{margin-top:14px!important;padding-top:12px}
+
+.right #s11{margin-top:0}.right{justify-content:space-between;gap:10px}
+.right .hyp-result{padding:10px 13px;margin-bottom:6px}.right .hyp-result:last-child{margin-bottom:0}
+.right .content{padding-top:9px;padding-bottom:9px}
+.right .takeaways{margin-top:10px}.right .takeaways>div{margin-bottom:8px}
+.right .unexpected{margin-top:10px!important;padding-top:10px}
+.right .main-takeaway{padding:14px}
+.right .bar-row{margin-bottom:8px}.right .ocr-bars{margin:11px 0}
+#s12 .content{padding-top:10px;padding-bottom:10px}
+
+.flow>div{display:grid;grid-template-columns:40px minmax(0,1fr);align-items:start}
+.flow .icon{margin-top:2px}.flow strong{display:block;line-height:1.08}
+.flow>div:not(:last-child)::after{top:-2px;line-height:40px;height:40px}
+#s6 .content>h3:first-child,#s6 .subhead{display:block;margin:0 0 6px}
+#s6 .content>h3:first-child+p,#s6 .subhead+p{display:block}
+#s6 .subhead{margin-top:15px}#s6 .subhead::before{display:none}
+
+/* Reading flow v4: context 1–5, methods/evaluation/results 6–8, discussion 9–13. */
+.columns{grid-template-columns:29% 39.5% 1fr}
+.center{justify-content:space-between}.center #s8{margin-top:auto}
+.right{justify-content:space-between;gap:10px}.right #s13{margin-top:0}
+#s13 li{font-size:16pt;line-height:1.06;margin-bottom:5px}
+#s13 .code{font-size:24pt;margin-top:10px;padding-top:8px}
+.baseline{display:grid;grid-template-columns:125px minmax(0,1fr);gap:15px;align-items:center;padding:14px 12px}
+.baseline>h3{margin:0;font-size:24pt;line-height:1.1}
+.flow{grid-template-columns:1fr 1.65fr .85fr 1.15fr;gap:25px;align-items:center}
+.flow>div{grid-template-columns:40px minmax(0,1fr);align-items:center;gap:8px}
+.flow strong{font-size:24pt;line-height:1.1}
+.flow .model{display:block;font-weight:400;white-space:nowrap;font-size:24pt;margin-top:5px}
+.flow>div:not(:last-child)::after{top:50%;transform:translateY(-50%);right:-24px}
+.flow .icon{width:40px;height:40px;margin:0}
+.stages{gap:12px;grid-template-rows:auto auto auto 56px auto}
+.stage{padding:12px 0 0;border:1px solid #c7dce8;border-radius:8px;row-gap:12px}
+.stage h3,.stage>p:not(.tech){padding:0 12px}
+.stage h3{line-height:1.08;font-size:24pt}
+.stage .icon{width:50px;height:50px;align-self:center;justify-self:center}
+.stage .tech{padding:10px 12px 12px;border:0;border-radius:6px 6px 7px 7px;line-height:1.08}
+.stage.doc .tech{background:#dceef9}.stage.retr .tech{background:#e1efd9}.stage.ans .tech{background:#f8e3cf}.stage.cit .tech{background:#e7ddf4}
+.stage:not(:last-child)::after{font-size:0;content:'';width:11px;height:18px;right:-12px;bottom:166px;background:var(--stage);clip-path:polygon(0 30%,55% 30%,55% 0,100% 50%,55% 100%,55% 70%,0 70%)}
+
+.stage h3,.stage>p:not(.tech){padding-left:6px;padding-right:6px}
+.stage .tech{padding:8px 6px 10px}
+.stages{grid-template-rows:auto auto auto 50px auto;row-gap:8px}
+.stage{row-gap:8px;padding-top:10px}
+.baseline{margin-bottom:14px}.subhead{margin-top:12px!important}
+#s13 h2{font-size:24pt}#s13 li{line-height:1;margin-bottom:3px}
+#s13 .content{padding:10px 12px}
+
+.baseline{grid-template-columns:115px minmax(0,1fr);gap:12px}
+.flow{grid-template-columns:1fr 1.7fr 1.2fr 1.2fr;gap:20px}
+.flow>div:not(:last-child)::after{right:-21px}
+.stage h3{grid-row:1}.stage>p:not(.tech){grid-row:2}.stage>.icon{grid-row:3}.stage>.tech{grid-row:4}
+.stage:not(:last-child)::after{position:relative;grid-row:3;grid-column:1;align-self:center;justify-self:end;right:-12px;bottom:auto}
+
+.stage{grid-template-columns:minmax(0,1fr)}.stage>*{grid-column:1}
+
+.center{gap:10px}
+</style></head><body><svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
 <symbol id="icon-file" viewBox="0 0 48 48"><path d="M10 4h18l10 10v30H10zM28 4v12h10M17 24h14M17 30h14M17 36h10"/></symbol>
 <symbol id="icon-scan" viewBox="0 0 48 48"><path d="M9 3h21l9 10v32H9zM30 3v12h9"/><path d="m14 35 7-9 7 7 5-5 2 7z" fill="currentColor" stroke="none"/><circle cx="17" cy="21" r="2" fill="currentColor" stroke="none"/></symbol>
 <symbol id="icon-layers" viewBox="0 0 48 48"><path d="m24 5 20 11-20 11L4 16zM5 25l19 11 19-11M5 34l19 11 19-11"/></symbol>
 <symbol id="icon-search" viewBox="0 0 48 48"><circle cx="20" cy="20" r="14"/><path d="m30 30 14 14"/></symbol>
 <symbol id="icon-rank" viewBox="0 0 48 48"><path d="M6 10h3v9M5 19h7M5 27q6-6 7-1c1 3-7 4-7 8h8M5 39h5q4 0 1 3 4 3-1 4H5"/><rect x="19" y="11" width="26" height="6" rx="1" fill="currentColor" stroke="none"/><rect x="19" y="26" width="21" height="6" rx="1" fill="currentColor" stroke="none" opacity=".7"/><rect x="19" y="40" width="15" height="6" rx="1" fill="currentColor" stroke="none" opacity=".45"/></symbol>
 <symbol id="icon-check" viewBox="0 0 48 48"><path d="M8 3h20l10 11v11M8 3v40h14M28 3v12h10M15 22h14M15 29h9"/><circle cx="34" cy="36" r="11" fill="currentColor" stroke="none"/><path d="m28 36 4 4 8-9" stroke="white" stroke-width="3"/></symbol>
-<symbol id="icon-link" viewBox="0 0 48 48"><path d="M8 3h20l10 11v8M8 3v40h12M28 3v12h10M15 23h13M15 30h8M27 30l4-4q5-4 9 0t0 8l-4 4M34 35l-4 4q-5 5-9 0t0-8l4-4M25 35l11-11"/></symbol>
+<symbol id="icon-link" viewBox="0 0 48 48"><path d="M8 3h20l10 10v13M8 3v41h14M28 3v11h10M15 22h14M15 29h9"/><circle cx="34" cy="35" r="13" fill="#f1eafb" stroke="none"/><g transform="translate(21 22)"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></g></symbol>
 <symbol id="icon-answer" viewBox="0 0 48 48"><path d="M6 5h36v28H23l-11 10V33H6z"/><circle cx="15" cy="19" r="2" fill="currentColor"/><circle cx="24" cy="19" r="2" fill="currentColor"/><circle cx="33" cy="19" r="2" fill="currentColor"/></symbol>
-</defs></svg>
-<main class="poster">
-<header>
- <h1>Building Legal RAG:<br>what each component contributes</h1>
- <img class="logo" src="assets/trier-university.svg" alt="Universität Trier">
-</header>
+</defs></svg><main class="poster"><header><h1>Building Legal RAG: what each component contributes</h1><img class="logo" src="assets/trier-university.svg" alt="Universität Trier"></header>
+<div class="columns">
+<div class="col left">
+<section id="s1" class=""><h2><span>1.</span> Research Context</h2>
+<div class="content"><p class="">RAG grounds language-model answers in external documents, but legal QA requires a pipeline to satisfy two goals at once: retrieve enough relevant evidence to produce a correct answer, while keeping source-page citations precise and complete. This is challenging because legal PDFs may lack machine-readable text, evidence can appear at different textual scales, and questions may depend on either exact legal references or semantic similarity. Moreover, retrieving more evidence can improve coverage while also introducing irrelevant source pages. We therefore examine how design choices in document processing, retrieval, and attribution can improve answer quality without sacrificing citation quality.</p>
+</div></section>
 
-<section aria-labelledby="hypothesis-title">
- <div class="section-title"><span class="num">01</span><h2 id="hypothesis-title">Context and hypothesis</h2></div>
- <p class="context">Retrieval-augmented generation (RAG) grounds language-model answers in external documents [1]. Legal QA needs correct answers and precise, complete source-page citations [2, 3]. PDFs may lack searchable text; evidence spans different text scales and may require exact legal terms. Retrieving more passages can also introduce irrelevant pages.</p>
- <p class="question">How can a legal RAG pipeline improve answer quality<br>while keeping source-page citations both precise and complete?</p>
- <div class="grid three hypotheses">
-  <div><h3>H1 · Retrieval</h3><p>Multiple text scales, hybrid search and reranking will improve answers and evidence retrieval over R0.</p></div>
-  <div><h3>H2 · Scan robustness</h3><p>Recovering text from scanned documents will reduce the performance loss caused by the missing text layer.</p></div>
-  <div><h3>H3 · Citation selection</h3><p>Selecting pages after answer generation will improve citation precision while retaining most of the relevant evidence.</p></div>
- </div>
-</section>
+<section id="s2" class=""><h2><span>2.</span> Prior Work &amp; Study Focus</h2>
+<div class="content"><p class="">Retrieval-augmented generation (RAG) conditions language-model answers on retrieved documents [1]. Legal retrieval must balance precision and coverage: LegalBench-RAG targets minimal relevant passages [2], while regulatory QA studies show that retrieving all supporting evidence becomes harder when it spans multiple passages [3]. In an end-to-end legal benchmark, retrieval-model choice had a larger effect on answer correctness than generator choice [4].</p>
+<p class="">Evaluation also extends beyond correctness. Legal QA research examines whether answers are supported by the supplied context [5], while ALCE evaluates answer correctness and citation quality separately [6]. Together, these studies motivate evaluating both the evidence available to the generator and the sources ultimately cited.</p>
+<p class="">Our study complements these approaches by holding the generator fixed and examining a broader sequence of pipeline choices, from document processing to final page selection.</p>
+</div></section>
 
-<section aria-labelledby="method-title">
- <div class="section-title"><span class="num">02</span><h2 id="method-title">Methodology</h2></div>
- <p class="data"><strong>Data:</strong> 30 DIFC legal PDFs (590 pages), 100 questions: 70 structured-answer and 30 free-text. Reference source pages are available for 95 questions. In the mixed corpus, 10 PDFs (107 pages) become synthetic scans: page images at 300 DPI with the text layer removed.</p>
- <div class="baseline-flow" role="group" aria-label="R0 baseline pipeline">
-  <h3>R0 · Baseline</h3>
-  <div class="baseline-node"><svg class="icon" aria-hidden="true"><use href="#icon-file"/></svg><p><strong>PDF text</strong>300-token passages</p></div>
-  <div class="baseline-node"><svg class="icon" aria-hidden="true"><use href="#icon-search"/></svg><p><strong>Semantic retrieval</strong>Qwen3-Embedding-0.6B</p></div>
-  <div class="baseline-node"><svg class="icon" aria-hidden="true"><use href="#icon-answer"/></svg><p><strong>Generate answer</strong>GPT-5.4-mini</p></div>
-  <div class="baseline-node"><svg class="icon" aria-hidden="true"><use href="#icon-file"/></svg><p><strong>Answer + retrieved pages</strong>All context pages as citations</p></div>
- </div>
- <div class="pipeline-groups" role="group" aria-label="Six cumulative pipeline additions">
-  <div class="phase doc-stage"><span>Document processing</span></div><div class="phase retrieval-stage"><span>Retrieval</span></div><div class="phase single answer-stage"><span>Answering</span></div><div class="phase single citation-stage"><span>Citations</span></div>
-  <div class="pipeline-card doc-stage"><div class="card-body"><h3>R1 · OCR</h3><p class="purpose">Recover text from scanned pages</p><svg class="icon" aria-hidden="true"><use href="#icon-scan"/></svg></div><p class="technology">PP-OCRv5</p></div>
-  <div class="pipeline-card doc-stage"><div class="card-body"><h3>R2 · Multiple<br>text scales</h3><p class="purpose">Represent evidence at multiple levels</p><svg class="icon" aria-hidden="true"><use href="#icon-layers"/></svg></div><p class="technology">Pages, sections, clauses, microchunks, tables</p></div>
-  <div class="pipeline-card retrieval-stage"><div class="card-body"><h3>R3 · Lexical<br>retrieval</h3><p class="purpose">Combine semantic and exact-term search</p><svg class="icon" aria-hidden="true"><use href="#icon-search"/></svg></div><p class="technology">BM25 + RRF<br>with semantic retrieval</p></div>
-  <div class="pipeline-card retrieval-stage"><div class="card-body"><h3>R4 · Neural<br>reranking</h3><p class="purpose">Prioritize the most relevant evidence</p><svg class="icon" aria-hidden="true"><use href="#icon-rank"/></svg></div><p class="technology">Qwen3-<br>Reranker-0.6B</p></div>
-  <div class="pipeline-card answer-stage"><div class="card-body"><h3>R5 · Answer<br>type checks</h3><p class="purpose">Normalize and validate the answer type</p><svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg></div><p class="technology">Normalization, validation and confidence checks</p></div>
-  <div class="pipeline-card citation-stage"><div class="card-body"><h3>R6 · Citation<br>selection</h3><p class="purpose">Select pages from supporting chunks</p><svg class="icon" aria-hidden="true"><use href="#icon-link"/></svg></div><p class="technology">Supporting-chunk references + page validation</p></div>
- </div>
- <p class="cumulative-note">Each variant (R1–R6) includes all previous additions.</p>
- <p class="answer-generation"><strong>Answer generation:</strong> A fixed GPT-5.4-mini configuration is used across variants, so changes in performance reflect modifications to the surrounding pipeline rather than a change of the generating LLM.</p>
- <div class="evaluation" role="group" aria-label="Evaluation metrics">
-  <div>
-   <h3>Answer quality</h3>
-   <p class="metric-question">Is the generated answer correct?</p>
-   <p class="formula">Q = 0.7 × structured score<br>+ 0.3 × free-text score</p>
-  </div>
-  <div>
-   <h3>Citation precision</h3>
-   <p class="metric-question">Are the cited pages actually relevant?</p>
-   <p>Share of cited pages that support the answer.</p>
-  </div>
-  <div>
-   <h3>Citation recall</h3>
-   <p class="metric-question">Did the system cite all required evidence?</p>
-   <p>Share of annotated supporting pages that were cited.</p>
-  </div>
- </div>
-</section>
+<section id="s3" class="question"><h2><span>3.</span> Research question</h2>
+<div class="content"><p class="">With the answer generator fixed, which pipeline additions improve answer quality and page-level citation precision and recall, and where do these objectives conflict?</p>
+</div></section>
 
-<section aria-labelledby="results-title">
- <div class="section-title"><span class="num">03</span><h2 id="results-title">Results</h2><span class="english">R0 to R6 on the mixed corpus</span></div>
+<section id="s4" class=""><h2><span>4.</span> Our Contribution</h2>
+<div class="content"><p class="">We build a Legal RAG pipeline and provide an empirical comparison of seven cumulative configurations on 30 documents and 100 questions. By adding components sequentially while keeping the answer generator fixed, we measure changes in answer quality and page-level citation precision and recall across stages of document processing, retrieval, reranking, answer processing, and citation selection.</p>
+</div></section>
 
- <figure><img class="chart" src="../results/pipeline-metrics.svg" alt="Q for R0 to R6: 46.2, 63.2, 49.8, 74.6, 84.4, 84.4, 84.4%. Precision: 7.6, 11.2, 14.7, 22.2, 27.1, 27.1, 61.8%. Recall: 38.5, 61.6, 52.9, 72.7, 78.9, 78.9, 74.7%."/></figure>
- <div class="grid detail-grid">
-  <div><h3>OCR recovers performance on scanned documents</h3><img class="ocr" src="../results/ocr-control.svg" alt="Answer quality: original corpus R0 65.4%; mixed corpus R0 46.2%; mixed corpus with OCR R1 63.2%."><p>Converting 10 documents into synthetic scans reduces answer quality from 65.4% to 46.2%. OCR restores most of this loss, reaching 63.2%.</p></div>
-  <div><h3>Hypothesis evaluation</h3>
-   <p class="hyp-row"><strong>H1 · Partially supported.</strong> Multiple scales alone reduce Q; lexical retrieval and reranking improve Q and recall.</p>
-   <p class="hyp-row"><strong>H2 · Supported.</strong> OCR restores most of the loss caused by removing the text layer.</p>
-   <p class="hyp-row"><strong>H3 · Supported with a trade-off.</strong> Precision rises from 27.1% to 61.8%; recall falls from 78.9% to 74.7% (−4.2 pp).</p>
-   <div class="limitations">
-    <h3>Limitations</h3>
-    <p>one DIFC corpus and 100 questions; one run per condition with no significance testing; LLM-based evaluation of free-text answers.</p>
-   </div>
-  </div>
- </div>
- <div class="conclusion">
-  <h3>Conclusion</h3>
-  <p>Legal RAG should be designed as a multi-stage pipeline: OCR improves robustness to unreadable PDFs, hybrid retrieval and reranking improve answer quality, and post-answer citation selection improves citation precision. However, citation selection introduces a precision–recall trade-off, so answer quality and citation quality should be optimized and evaluated separately.</p>
- </div>
-</section>
+<section id="s5" class=""><h2><span>5.</span> Hypothesis</h2>
+<div class="content"><div class="hyp h1"><h3>H1 — Retrieval</h3>
+<p class="">Combining multiple text granularities, semantic and lexical retrieval, and relevance reranking will improve answer quality and evidence retrieval compared with a simple semantic-retrieval baseline.</p>
+</div><div class="hyp h2"><h3>H2 — Robustness to scanned documents</h3>
+<p class="">Recovering text from scan-like legal documents will reduce the performance loss caused by the absence of a machine-readable text layer.</p>
+</div><div class="hyp h3"><h3>H3 — Citation attribution</h3>
+<p class="">Selecting source pages after answer generation will produce a more focused citation set without substantially reducing the coverage of relevant evidence.</p>
+</div></div></section>
+</div>
+<div class="col center">
+<section id="s6" class=""><h2><span>6.</span> Data and Methods</h2>
+<div class="content"><h3>Data</h3>
+<p class="">30 DIFC legal PDFs (590 pages), 100 questions, including 70 structured-answer and 30 free-text questions. Reference source pages are available for 95 questions. For the scan-robustness test, 10 of the 30 documents (107 pages) were converted into synthetic scans: each page was rasterised as an image and its machine-readable text layer was removed.</p>
+<h3 class="subhead">Pipeline</h3>
+<p class="">Starting from a simple baseline, we add one capability at a time. Each variant includes all previous additions.</p>
+<div class="baseline"><h3>R0 · Baseline</h3>
+<div class="flow"><div><svg class="icon" aria-hidden="true"><use href="#icon-file"/></svg><strong>PDF text<br><span>300-token passages</span></strong></div><div><svg class="icon" aria-hidden="true"><use href="#icon-search"/></svg><strong>Semantic retrieval<span class="model">Qwen3-Embedding-0.6B</span></strong></div><div><svg class="icon" aria-hidden="true"><use href="#icon-answer"/></svg><strong>Generate answer<span class="model">GPT-5.4-mini</span></strong></div><div><svg class="icon" aria-hidden="true"><use href="#icon-file"/></svg><strong>Answer +<br>retrieved pages</strong></div></div></div><div class="stages"><div class="phase doc">Document processing</div><div class="phase retr">Retrieval</div><div class="phase ans single">Answering</div><div class="phase cit single">Citations</div><div class="stage doc"><h3>R1 · Read scans</h3>
+<p class="">Convert scanned pages into searchable text</p>
+<svg class="icon" aria-hidden="true"><use href="#icon-scan"/></svg><p class="tech">PP-OCRv5</p>
+</div><div class="stage doc"><h3>R2 · Multiple scales</h3>
+<p class="">Represent evidence at multiple scales</p>
+<svg class="icon" aria-hidden="true"><use href="#icon-layers"/></svg><p class="tech">Pages, sections, clauses, microchunks, tables</p>
+</div><div class="stage retr"><h3>R3 · Find exact terms too</h3>
+<p class="">Combine semantic and exact-word search</p>
+<svg class="icon" aria-hidden="true"><use href="#icon-search"/></svg><p class="tech">BM25 + RRF</p>
+</div><div class="stage retr"><h3>R4 · Prioritize better evidence</h3>
+<p class="">Move the most relevant passages to the top</p>
+<svg class="icon" aria-hidden="true"><use href="#icon-rank"/></svg><p class="tech">Qwen3-Reranker</p>
+</div><div class="stage ans"><h3>R5 · Check the answer</h3>
+<p class="">Normalize and validate the expected answer type</p>
+<svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg><p class="tech">Typed schema</p>
+</div><div class="stage cit"><h3>R6 · Refine citations</h3>
+<p class="">Keep only pages that support the final answer</p>
+<svg class="icon" aria-hidden="true"><use href="#icon-link"/></svg><p class="tech">Supporting-chunk references</p>
+</div></div><p class="fixed"><strong>Answer generation:</strong> A fixed GPT-5.4-mini configuration is used across variants, so changes in performance reflect modifications to the surrounding pipeline rather than a change of the generating LLM.</p>
+</div></section>
 
-<footer>
- <p class="refs"><strong>References:</strong> <a href="https://arxiv.org/abs/2005.11401">[1] Lewis et al. RAG (2020).</a> <a href="https://arxiv.org/abs/2408.10343">[2] Pipitone &amp; Alami. LegalBench-RAG (2024).</a> <a href="https://doi.org/10.18653/v1/2023.emnlp-main.398">[3] Gao et al. ALCE (2023).</a></p>
- <p class="code"><strong>Code, protocol &amp; results:</strong> <a href="https://github.com/SteinVR/Trends-in-NLP-Poster">github.com/SteinVR/Trends-in-NLP-Poster</a></p>
-</footer>
-</main>
-<nav class="toolbar" aria-label="Materials"><button id="zoom-toggle" type="button">100% size</button><span>HTML review draft</span></nav>
-<script>
-let actualSize=false;
-function fitPoster(){document.querySelector('.poster').style.zoom=actualSize?1:Math.min(1,(window.innerWidth-40)/(594*96/25.4));}
-document.querySelector('#zoom-toggle').addEventListener('click',()=>{actualSize=!actualSize;document.querySelector('#zoom-toggle').textContent=actualSize?'Fit width':'100% size';fitPoster();});
-window.addEventListener('resize',fitPoster);fitPoster();
-</script>
-</body>
-</html>
+<section id="s7" class=""><h2><span>7.</span> Evaluation</h2>
+<div class="content"><p class="eval-intro">A correct answer does not necessarily imply good citations. A system may produce the right answer while citing irrelevant pages, or it may cite only part of the evidence required to support the answer. We therefore evaluate answer quality and citation quality separately.</p>
+<div class="eval-grid"><div class="doc"><h3>Answer quality</h3>
+<p class="metric-question">Is the generated answer correct?</p>
+<p class=""><strong>Q = 0.7 × structured score<br>+ 0.3 × free-text score</strong></p>
+</div><div class="retr"><h3>Citation precision</h3>
+<p class="metric-question">Are the cited pages actually relevant?</p>
+<p class="">Share of cited pages that support the answer.</p>
+</div><div class="ans"><h3>Citation recall</h3>
+<p class="metric-question">Did the system cite all required evidence?</p>
+<p class="">Share of annotated supporting pages that were cited.</p>
+</div></div></div></section>
+
+
+<section id="s8" class=""><h2><span>8.</span> Results</h2>
+<div class="content"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 340" class="chart" role="img" aria-label="Answer quality, citation precision and citation recall across R0 to R6"><style>text{font-family:Poster,sans-serif;font-size:26px;fill:#13304c}.ctitle{font-weight:bold;font-size:30px}.val{font-weight:bold;font-size:25px;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round}.axis{fill:#516578;font-size:24px}</style><text x="4" y="31.00" class="ctitle" text-anchor="start">Answer quality Q, %</text><text x="4" y="66.00" class="axis" text-anchor="start">100 questions</text><path d="M40 278.30H300" stroke="#dce6ed" stroke-width="1.5"/><text x="31" y="285.50" class="axis" text-anchor="end">0</text><path d="M40 189.65H300" stroke="#dce6ed" stroke-width="1.5"/><text x="31" y="196.85" class="axis" text-anchor="end">50</text><path d="M40 101.00H300" stroke="#dce6ed" stroke-width="1.5"/><text x="31" y="108.20" class="axis" text-anchor="end">100</text><polyline points="40.0,196.39 82.0,166.25 124.0,190.00 166.0,146.03 208.0,128.66 250.0,128.66 292.0,128.66" fill="none" stroke="#0674b6" stroke-width="4"/><circle cx="40.0" cy="196.39" r="5" fill="#0674b6"/><text x="40.0" y="227.19" class="val" text-anchor="middle">46.2</text><text x="40.0" y="322.3" class="axis" text-anchor="middle">R0</text><circle cx="82.0" cy="166.25" r="5" fill="#0674b6"/><text x="82.0" y="150.05" class="val" text-anchor="middle">63.2</text><text x="82.0" y="322.3" class="axis" text-anchor="middle">R1</text><circle cx="124.0" cy="190.00" r="5" fill="#0674b6"/><text x="124.0" y="217.90" class="val" text-anchor="middle">49.8</text><text x="124.0" y="322.3" class="axis" text-anchor="middle">R2</text><circle cx="166.0" cy="146.03" r="5" fill="#0674b6"/><text x="166.0" y="129.83" class="val" text-anchor="middle">74.6</text><text x="166.0" y="322.3" class="axis" text-anchor="middle">R3</text><circle cx="208.0" cy="128.66" r="5" fill="#0674b6"/><text x="208.0" y="112.46" class="val" text-anchor="middle">84.4</text><text x="208.0" y="322.3" class="axis" text-anchor="middle">R4</text><circle cx="250.0" cy="128.66" r="5" fill="#0674b6"/><text x="250.0" y="159.45999999999998" class="val" text-anchor="middle">84.4</text><text x="250.0" y="322.3" class="axis" text-anchor="middle">R5</text><circle cx="292.0" cy="128.66" r="5" fill="#0674b6"/><text x="292.0" y="112.46" class="val" text-anchor="middle">84.4</text><text x="292.0" y="322.3" class="axis" text-anchor="middle">R6</text><text x="327" y="31.00" class="ctitle" text-anchor="start">Citation precision, %</text><text x="327" y="66.00" class="axis" text-anchor="start">95 questions</text><path d="M363 278.30H623" stroke="#dce6ed" stroke-width="1.5"/><text x="354" y="285.50" class="axis" text-anchor="end">0</text><path d="M363 189.65H623" stroke="#dce6ed" stroke-width="1.5"/><text x="354" y="196.85" class="axis" text-anchor="end">50</text><path d="M363 101.00H623" stroke="#dce6ed" stroke-width="1.5"/><text x="354" y="108.20" class="axis" text-anchor="end">100</text><polyline points="363.0,264.82 405.0,258.41 447.0,252.18 489.0,238.97 531.0,230.29 573.0,230.29 615.0,168.79" fill="none" stroke="#0674b6" stroke-width="4"/><circle cx="363.0" cy="264.82" r="5" fill="#0674b6"/><text x="363.0" y="248.62" class="val" text-anchor="middle">7.6</text><text x="363.0" y="322.3" class="axis" text-anchor="middle">R0</text><circle cx="405.0" cy="258.41" r="5" fill="#0674b6"/><text x="405.0" y="242.21" class="val" text-anchor="middle">11.2</text><text x="405.0" y="322.3" class="axis" text-anchor="middle">R1</text><circle cx="447.0" cy="252.18" r="5" fill="#0674b6"/><text x="447.0" y="235.98" class="val" text-anchor="middle">14.7</text><text x="447.0" y="322.3" class="axis" text-anchor="middle">R2</text><circle cx="489.0" cy="238.97" r="5" fill="#0674b6"/><text x="489.0" y="222.77" class="val" text-anchor="middle">22.2</text><text x="489.0" y="322.3" class="axis" text-anchor="middle">R3</text><circle cx="531.0" cy="230.29" r="5" fill="#0674b6"/><text x="531.0" y="214.09" class="val" text-anchor="middle">27.1</text><text x="531.0" y="322.3" class="axis" text-anchor="middle">R4</text><circle cx="573.0" cy="230.29" r="5" fill="#0674b6"/><text x="573.0" y="258.19" class="val" text-anchor="middle">27.1</text><text x="573.0" y="322.3" class="axis" text-anchor="middle">R5</text><circle cx="615.0" cy="168.79" r="5" fill="#0674b6"/><text x="615.0" y="152.59" class="val" text-anchor="middle">61.8</text><text x="615.0" y="322.3" class="axis" text-anchor="middle">R6</text><text x="650" y="31.00" class="ctitle" text-anchor="start">Citation recall, %</text><text x="650" y="66.00" class="axis" text-anchor="start">95 questions</text><path d="M686 278.30H946" stroke="#dce6ed" stroke-width="1.5"/><text x="677" y="285.50" class="axis" text-anchor="end">0</text><path d="M686 189.65H946" stroke="#dce6ed" stroke-width="1.5"/><text x="677" y="196.85" class="axis" text-anchor="end">50</text><path d="M686 101.00H946" stroke="#dce6ed" stroke-width="1.5"/><text x="677" y="108.20" class="axis" text-anchor="end">100</text><polyline points="686.0,210.02 728.0,169.04 770.0,184.52 812.0,149.45 854.0,138.33 896.0,138.33 938.0,145.79" fill="none" stroke="#0674b6" stroke-width="4"/><circle cx="686.0" cy="210.02" r="5" fill="#0674b6"/><text x="686.0" y="240.82" class="val" text-anchor="middle">38.5</text><text x="686.0" y="322.3" class="axis" text-anchor="middle">R0</text><circle cx="728.0" cy="169.04" r="5" fill="#0674b6"/><text x="728.0" y="152.84" class="val" text-anchor="middle">61.6</text><text x="728.0" y="322.3" class="axis" text-anchor="middle">R1</text><circle cx="770.0" cy="184.52" r="5" fill="#0674b6"/><text x="770.0" y="212.42" class="val" text-anchor="middle">52.9</text><text x="770.0" y="322.3" class="axis" text-anchor="middle">R2</text><circle cx="812.0" cy="149.45" r="5" fill="#0674b6"/><text x="812.0" y="133.25" class="val" text-anchor="middle">72.7</text><text x="812.0" y="322.3" class="axis" text-anchor="middle">R3</text><circle cx="854.0" cy="138.33" r="5" fill="#0674b6"/><text x="854.0" y="122.13" class="val" text-anchor="middle">78.9</text><text x="854.0" y="322.3" class="axis" text-anchor="middle">R4</text><circle cx="896.0" cy="138.33" r="5" fill="#0674b6"/><text x="896.0" y="169.13" class="val" text-anchor="middle">78.9</text><text x="896.0" y="322.3" class="axis" text-anchor="middle">R5</text><circle cx="938.0" cy="145.79" r="5" fill="#0674b6"/><text x="938.0" y="129.59" class="val" text-anchor="middle">74.7</text><text x="938.0" y="322.3" class="axis" text-anchor="middle">R6</text></svg></div></section></div>
+<div class="col right">
+
+
+<section id="s9" class=""><h2><span>9.</span> OCR robustness</h2>
+<div class="content"><h3>OCR recovers performance on scanned documents</h3>
+<div class="ocr-bars"><div class="bar-row"><span>Original corpus · R0</span><div class="track"><div class="bar" style="width:65.4%"></div><strong style="left:calc(65.4% + 8px)">65.4</strong></div></div><div class="bar-row"><span>Mixed corpus (original + synthetic scans) · R0</span><div class="track"><div class="bar" style="width:46.2%"></div><strong style="left:calc(46.2% + 8px)">46.2</strong></div></div><div class="bar-row"><span>Mixed corpus + OCR · R1</span><div class="track"><div class="bar" style="width:63.2%"></div><strong style="left:calc(63.2% + 8px)">63.2</strong></div></div><div class="scale"><span>0</span><span>50</span><span>100%</span></div></div><p class="">Converting 10 documents into synthetic scans reduces answer quality from 65.4% to 46.2%. OCR restores most of this loss, reaching 63.2%.</p>
+</div></section>
+
+<section id="s10" class=""><h2><span>10.</span> Hypothesis evaluation</h2>
+<div class="content"><div class="hyp-result h1"><h3>H1 — Retrieval &amp; representation</h3>
+<p class=""><strong>Partially supported.</strong> Multi-scale representations alone reduce Q, but adding lexical retrieval and reranking substantially improves answer quality and source-page recall.</p>
+</div><div class="hyp-result h2"><h3>H2 — Scan robustness</h3>
+<p class=""><strong>Supported.</strong> OCR restores most of the answer-quality loss caused by removing the machine-readable text layer.</p>
+</div><div class="hyp-result h3"><h3>H3 — Citation selection</h3>
+<p class=""><strong>Supported with a trade-off.</strong> Precision rises from 27.1% to 61.8%, while recall decreases moderately from 78.9% to 74.7%.</p>
+</div></div></section>
+
+
+
+
+<section id="s11" class="conclusion"><h2><span>11.</span> Conclusion and takeaways</h2>
+<div class="content"><p class="main-takeaway">Legal RAG should be designed as a multi-stage pipeline: OCR improves robustness to unreadable PDFs, hybrid retrieval and reranking improve answer quality, and post-answer citation selection improves citation precision. However, citation selection introduces a precision–recall trade-off, so answer quality and citation quality should be optimized and evaluated separately.</p>
+<div class="takeaways"><div><h3>1 · Ensure document robustness</h3>
+<p class="">OCR provides robustness when machine-readable text is unavailable. It recovered most of the performance loss introduced by synthetic scans.</p>
+</div><div><h3>2 · Optimize retrieval</h3>
+<p class="">Hybrid retrieval and reranking produced the largest observed gains in answer quality. Additional representation complexity did not consistently improve performance.</p>
+</div><div><h3>3 · Optimize citations separately</h3>
+<p class="">Post-answer citation selection substantially increased precision, with a small reduction in recall.</p>
+</div></div><p class="unexpected"><strong>Unexpected outcome:</strong> Multi-scale representations did not improve performance; Q decreased from 63.2% to 49.8% after R2.</p>
+</div></section><section id="s12" class=""><h2><span>12.</span> Limitations</h2>
+<div class="content"><p class="">one DIFC corpus and 100 questions; one run per condition with no significance testing; LLM-based evaluation of free-text answers.</p>
+</div></section><section id="s13" class=""><h2><span>13.</span> References</h2>
+<div class="content"><ol><li>Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., ... &amp; Kiela, D. (2020). Retrieval-augmented generation for knowledge-intensive nlp tasks. Advances in neural information processing systems, 33, 9459-9474.</li>
+<li>Pipitone, Nicholas, and Ghita Houir Alami. "Legalbench-rag: A benchmark for retrieval-augmented generation in the legal domain." arXiv preprint arXiv:2408.10343 (2024).</li>
+<li>Gokhan, T., &amp; Briscoe, T. (2025, November). Grounded Answers from Multi-Passage Regulations: Learning-to-Rank for Regulatory RAG. In Proceedings of the Natural Legal Language Processing Workshop 2025 (pp. 135-146).</li>
+<li>Butler, A. R., &amp; Butler, U. (2026). Legal RAG Bench: an end-to-end benchmark for legal RAG. arXiv preprint arXiv:2603.01710.</li>
+<li>Trautmann, D., Ostapuk, N., Grail, Q., Pol, A., Bonifazi, G., Gao, S., &amp; Gajek, M. (2024, November). Measuring the groundedness of legal question-answering systems. In Proceedings of the Natural Legal Language Processing Workshop 2024 (pp. 176-186).</li>
+<li>Gao, T., Yen, H., Yu, J., &amp; Chen, D. (2023, December). Enabling large language models to generate text with citations. In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing (pp. 6465-6488).</li>
+</ol>
+<p class="code"><strong>Code, protocol &amp; results</strong><br><a href="https://github.com/SteinVR/Trends-in-NLP-Poster">github.com/SteinVR/Trends-in-NLP-Poster</a></p>
+</div></section></div></div></main>
+<script>function fit(){document.querySelector(".poster").style.zoom=Math.min(1,(innerWidth-32)/(841*96/25.4))}fit();addEventListener("resize",fit);</script></body></html>
